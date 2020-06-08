@@ -40,6 +40,51 @@ def recebe_odometria(data):
         print("Posicao (x,y)  ({:.2f} , {:.2f}) + angulo {:.2f}".format(x, y,angulos[2]))
     contador = contador + 1
 
+
+
+virado_y = False
+cheguei = False
+lado = 2
+
+def go_to(x_objetivo,y_objetivo):
+
+    virado_y = False
+    # cheguei = False
+    # lado = 2
+
+    while x_objetivo > 0 and x < x_objetivo and virado_y == False:
+        vel = Twist(Vector3(0.1,0,0), Vector3(0,0,0))
+        velocidade_saida.publish(vel)
+        print("ESTOU INDO NO X")
+        rospy.sleep(0.1)
+        
+
+    if x > x_objetivo and virado_y == False:
+        vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+        velocidade_saida.publish(vel)
+        rospy.sleep(0.2)
+        if y_objetivo > 0:
+            vel = Twist(Vector3(0,0,0), Vector3(0,0,0.1))
+            velocidade_saida.publish(vel)
+            rospy.sleep((math.pi/2)/0.1)
+            virado_y = True
+        if y_objetivo < 0:
+            vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
+            velocidade_saida.publish(vel)
+            rospy.sleep((math.pi/2)/0.1)
+            virado_y = True
+    
+    if virado_y == True:
+        while y_objetivo > 0 and y < y_objetivo:
+            vel = Twist(Vector3(0.1,0,0), Vector3(0,0,0))
+            velocidade_saida.publish(vel)
+            print("ESTOU INDO NO Y")
+            rospy.sleep(0.1)
+        if y > y_objetivo:
+            vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+            velocidade_saida.publish(vel)
+            rospy.sleep(0.2)
+
 if __name__=="__main__":
 
     rospy.init_node("q3")
@@ -47,14 +92,38 @@ if __name__=="__main__":
     
 
 
-
-
     velocidade_saida = rospy.Publisher("/cmd_vel", Twist, queue_size = 3 )
 
     ref_odometria = rospy.Subscriber("/odom", Odometry, recebe_odometria)
+
+    tolerancia = 0.15
+
+    
+
 
 
     rospy.sleep(1.0) # contorna bugs de timing    
 
     while not rospy.is_shutdown():
-        rospy.sleep(0.5)    
+
+            
+
+        
+        go_to(1,1)
+
+
+
+            
+        rospy.sleep(0.1)    
+
+
+# if cheguei == True:
+#             vel = Twist(Vector3(0.1,0,0), Vector3(0,0,0))
+#             velocidade_saida.publish(vel)
+#             rospy.sleep((lado/2)/0.1)
+#             vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+#             velocidade_saida.publish(vel)
+#             rospy.sleep(0.1)
+#             vel = Twist(Vector3(0,0,0), Vector3(0,0,0.1))
+#             velocidade_saida.publish(vel)
+#             rospy.sleep((math.pi/3)/0.1)

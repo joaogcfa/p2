@@ -43,22 +43,49 @@ def scaneou(dado):
     minv = dado.range_min 
     maxv = dado.range_max
     distancia = dado.ranges[0]
- 
+
+def auto_canny(image, sigma=0.33):
+    # compute the median of the single channel pixel intensities
+    v = np.median(image)
+
+    # apply automatic Canny edge detection using the computed median
+    lower = int(max(0, (1.0 - sigma) * v))
+    upper = int(min(255, (1.0 + sigma) * v))
+    edged = cv2.Canny(image, lower, upper)
+
+    # return the edged image
+    return edged
+
 # A função a seguir é chamada sempre que chega um novo frame
 def roda_todo_frame(imagem):
     global media
     global maior_contorno_area
     global centro
+    
 
     # print("frame")
     try:
+
+        
+
         cv_image = bridge.compressed_imgmsg_to_cv2(imagem, "bgr8")
 
+        gray = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+        # A gaussian blur to get rid of the noise in the image
+        blur = cv2.GaussianBlur(gray,(5,5),0)
+        #blur = gray
+        # Detect the edges present in the image
+        bordas = auto_canny(blur)
+
+        circles=cv2.HoughCircles(bordas,cv2.HOUGH_GRADIENT,2,40,param1=50,param2=100,minRadius=5,maxRadius=200)
 
         centro, img, resultados =  visao_module.processa(cv_image)
 
 
         media, maior_contorno_area = visao_module.identifica_cor(cv_image)
+
+        if circles is None:
+            media = []
 
 
 
@@ -67,6 +94,8 @@ def roda_todo_frame(imagem):
     except CvBridgeError as e:
         variavel = 0
         # print('ex', e)
+
+
 
 tolerancia = 20
 

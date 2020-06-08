@@ -48,11 +48,17 @@ lado = 2
 
 def go_to(x_objetivo,y_objetivo):
 
+    x_positivo = True
+    y_positivo = True
     virado_y = False
     # cheguei = False
     # lado = 2
+    if x_objetivo < 0:
+        x_positivo = False
+    if y_objetivo < 0:
+        y_positivo = False
 
-    while x_objetivo > 0 and x < x_objetivo and virado_y == False:
+    while x_objetivo > 0 and x < x_objetivo and virado_y == False and x_positivo == True:
         vel = Twist(Vector3(0.1,0,0), Vector3(0,0,0))
         velocidade_saida.publish(vel)
         print("ESTOU INDO NO X")

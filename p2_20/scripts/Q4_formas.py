@@ -56,11 +56,13 @@ def auto_canny(image, sigma=0.33):
     # return the edged image
     return edged
 
+sem_circ = True
 # A função a seguir é chamada sempre que chega um novo frame
 def roda_todo_frame(imagem):
     global media
     global maior_contorno_area
     global centro
+    global sem_circ
     
 
     # print("frame")
@@ -85,11 +87,13 @@ def roda_todo_frame(imagem):
         media, maior_contorno_area = visao_module.identifica_cor(cv_image)
 
         if circles is None:
+            sem_circ = True
             media = []
+        else:
+            sem_circ = False
 
 
-
-        cv2.imshow("Camera", cv_image)
+        cv2.imshow("Camera", img)
         cv2.waitKey(1)
     except CvBridgeError as e:
         variavel = 0
@@ -98,6 +102,7 @@ def roda_todo_frame(imagem):
 
 
 tolerancia = 20
+# sem_circ = True
 
 if __name__=="__main__":
 
@@ -111,7 +116,7 @@ if __name__=="__main__":
     while not rospy.is_shutdown():
         print(maior_contorno_area)
 
-        if len(media) != 0 and len(centro) !=0:
+        if len(media) != 0 and len(centro) !=0 and sem_circ == False:
             if media[0] > (centro[0] + tolerancia):
                 vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
                 velocidade_saida.publish(vel)
@@ -121,6 +126,8 @@ if __name__=="__main__":
             if media[0] < (centro[0] + tolerancia) and media[0] > (centro[0]-tolerancia) and distancia > 1:
                 vel = Twist(Vector3(0.1,0,0), Vector3(0,0,0))
                 velocidade_saida.publish(vel)
+                print(distancia)
+        if len(media) != 0 and len(centro) !=0:
             if media[0] < (centro[0] + tolerancia) and media[0] > (centro[0]-tolerancia) and distancia < 1:    
                 vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
                 velocidade_saida.publish(vel)

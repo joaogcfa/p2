@@ -65,7 +65,7 @@ def go_to(x_objetivo,y_objetivo):
         rospy.sleep(0.1)
         
 
-    if x > x_objetivo and virado_y == False:
+    if x > x_objetivo and virado_y == False and x_positivo == True:
         vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
         velocidade_saida.publish(vel)
         rospy.sleep(0.2)

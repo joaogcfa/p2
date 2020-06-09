@@ -103,4 +103,4 @@ def identifica_cor(frame):
     # cv2.imshow('seg', segmentado_cor)
     #cv2.waitKey(1)
 
-    return media, maior_contorno_area
+    return media, maior_contorno_area,
